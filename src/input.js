@@ -5,6 +5,7 @@
 
 function Video(size) {
     this.size = size;
+    this.server = [];
     // console.log(this);
 }
 
@@ -17,10 +18,11 @@ function EndPoints(latency) {
 function Input(file) {
     this.videos = [];
     this.ep = [];
-    // this.caches = [];
+    this.caches = {};
 
     var nbEndpoints = file[0].split(" ")[1];
     // console.log("nb endpoints :" + nbEndpoints)
+    var cacheSize = file[0].split(" ")[4];
     var videoLine = file[1].split(" ");
     for (var elem in videoLine) {
         this.videos.push(new Video(videoLine[elem]));
@@ -36,6 +38,9 @@ function Input(file) {
             // console.log("line:", file[line]);
             var split = file[line].split(" ");
             endpoint.cache[split[0]] = {lat: split[1]};
+            if (this.caches[split[0]] == undefined)
+                this.caches[split[0]] = {endpoints: []};
+            this.caches[split[0]].endpoints.push({endpoints: endpoint, lat: split[1]});
             // console.log(endpoint.cache[split[0]]);
             ++line;
             nbCaches--;
@@ -47,7 +52,6 @@ function Input(file) {
         var splitted = file[line].split(" ");
 
         // console.log("toto:", this.ep[splitted[1]].requests);
-
 
         this.ep[splitted[1]].requests.push({nbRequest: splitted[2], videoId: splitted[0]});
         ++line
