@@ -98,6 +98,16 @@ function Cache(maxSize) {
     }
 }
 
+function howManyDoWeUse(input) {
+    var used = 0;
+    for (cache in input.caches) {
+        if (input.caches[cache].used > 0) {
+            used++;
+        }
+    }
+    return used;
+}
+
 function Input(file) {
     mainServer = new Cache(-1);
     this.videos = [];
@@ -127,7 +137,7 @@ function Input(file) {
                 var cache = new Cache(cacheSize);
                 cache.endPoints.push(endpoint);
                 endpoint.cache[split[0]] = cache;
-                this.caches.push(cache);
+                this.caches[split[0]] = cache;
             }
             endpoint.cache[split[0]].latency[this.ep.length] = split[1];
             // if (this.caches[split[0]] == undefined)
