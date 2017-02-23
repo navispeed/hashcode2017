@@ -2,6 +2,19 @@
  * Created by greg on 23/02/2017.
  */
 
+function Request(requests, input, latency) {
+    this.nbRequest = requests.nbRequest;
+    this.videoId = requests.videoId;
+    this.videoSize = input.videos[requests.videoId];
+    this.weight = this.nbRequest * this.videoSize * latency;
+    this.latency =
+    this.recalculateWeight = function (latency){
+        this.weight = this.nbRequest * this.videoSize * latency;
+    }
+
+}
+
+
 
 function Video(size) {
     this.size = size;
@@ -13,6 +26,17 @@ function EndPoints(latency) {
     this.latency = latency;
     this.cache = {};
     this.requests = [];
+    this.Requests = [];
+    this.updateAllRequests = function () {
+        Requests = [];
+        for (var request in requests) {
+            Requests.push(new Request(requests[request], input, latency));
+        }
+    };
+    this.getAllRequest = function() {
+        var Requests = [];
+
+    }
 }
 
 function Input(file) {
