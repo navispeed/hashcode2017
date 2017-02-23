@@ -43,6 +43,7 @@ for (var i = 0; i < input.ep.length; ++i) {
 
 for (var elem in input.caches) {
     input.caches[elem].fill(getRequestofCache(input.caches[elem]));
+    input.ep[i].updateAllRequests();
     console.log("Boucle 2")
 }
 
