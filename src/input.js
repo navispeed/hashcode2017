@@ -11,7 +11,15 @@ function getRequestofCache(cache) {
         tab.concat(cache.endPoints[i].getAllRequest());
     }
 
-    return tab;
+    var sorted = tab.sort(function(a, b) {
+            if (a.weight < b.weight)
+                return -1;
+            if (a.weight > b.weight)
+                return 1;
+            return 0;
+        });
+
+    return sorted;
 }
 
 function Request(requests, input, latency) {
@@ -79,23 +87,73 @@ function EndPoints(id, latency) {
 }
 
 function Cache(maxSize) {
+
     this.capacity = maxSize;
     this.used = 0;
     this.videos = [];
     this.latency = {};
     this.endPoints = [];
+
+    this.addRequest = function (request)
+    {
+        if (this.capacity - this.used >= request.video.size)
+        {
+            this.videos.push(request.video);
+            request.video.servers.push(this);
+            this.used += request.video.size;
+            return (true);
+        }
+        return (false);
+    }
+
+/*
+    this.clearRequests = function ()
+    {
+        for (var request in this.requests)
+        {
+            for (var i = 0; i < request.video.servers.length; i++)
+            {
+                if (request.video.servers[i].id == this.id)
+                {
+                    request.video.servers.splice(i, 1);
+                    break;
+                }
+            }
+        }
+        this.videos = []
+    }
+*/
+
     this.fill = function (requests)
     {
         for (var request in requests)
         {
-            if (this.capacity - this.used >= request.video.size)
-            {
-                this.videos.push(request.video);
-                request.video.servers.push(this);
-                this.used += request.video.size;
-            }
+            this.addRequest(request);
         }
     }
+
+/*
+    this.allCombinationsOf = function (start, number, combination, combinations)
+    {
+        if (number == 0)
+        {
+            combinations.push(combination);
+            return;
+        }
+        for (var i = 0; i < requests.length; i++)
+        {
+            this.allCombinationsOf(start + 1, i, combination.slice(0), combinations);
+        }
+    }
+    this.getAllCombinations = function ()
+    {
+        combinations = []
+        for (var i = 0; i < requests.length; i++)
+        {
+            this.allCombinationsOf(0, i, [], combinations);
+        }
+    }
+*/
 }
 
 function howManyDoWeUse(input) {
