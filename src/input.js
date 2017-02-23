@@ -72,6 +72,7 @@ function Cache(maxSize) {
 }
 
 function Input(file) {
+    mainServer = new Cache(-1);
     this.videos = [];
     this.ep = [];
     this.caches = {}; //{endpoints}
@@ -83,6 +84,8 @@ function Input(file) {
     for (var elem in videoLine) {
         this.videos.push(new Video(videoLine[elem]));
     }
+
+    mainServer.videos = this.videos;
 
     var line = 2;
     for (var currentEndPoints = 0; currentEndPoints < nbEndpoints; ++currentEndPoints) {
