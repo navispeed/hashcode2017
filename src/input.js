@@ -80,6 +80,18 @@ function Cache(maxSize) {
     this.videos = [];
     this.latency = {};
     this.endPoints = [];
+    this.fill = function (requests)
+    {
+        for (var request in requests)
+        {
+            if (server.capacity - server.used >= request.video.size)
+            {
+                server.videos.push(request.video);
+                request.video.servers.push(server);
+                server.used += request.video.size;
+            }
+        }
+    }
 }
 
 function Input(file) {
