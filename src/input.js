@@ -30,7 +30,6 @@ function Request(requests, input, latency) {
     }
 }
 
-
 var mainServer = {};
 
 function Video(size) {
@@ -42,12 +41,13 @@ function Video(size) {
 
     this.addCache = function (cache) {
         this.server.push(cache);
-        cache.video.push(this);
+        cache.videos.push(this);
     }
 
 }
 
-function EndPoints(latency) {
+function EndPoints(id, latency) {
+    this.id = id;
     this.latency = latency;
     this.cache = {};
     this.requests = [];
@@ -88,7 +88,7 @@ function Input(file) {
     for (var currentEndPoints = 0; currentEndPoints < nbEndpoints; ++currentEndPoints) {
         var file2 = file[line].split(" ");
         var nbCaches = file2[1];
-        var endpoint = new EndPoints(file2[0]);
+        var endpoint = new EndPoints(this.ep.length, file2[0]);
         ++line;
         while (nbCaches > 0) {
             // console.log("line:", file[line]);
