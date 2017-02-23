@@ -69,8 +69,13 @@ function EndPoints(id, latency) {
         }
     };
     this.getAllRequest = function() {
-        var Requests = [];
-
+        return this.Requests.sort(function(a, b) {
+            if (a.weight < b.weight)
+                return -1;
+            if (a.weight > b.weight)
+                return 1;
+            return 0;
+        });
     }
 }
 
