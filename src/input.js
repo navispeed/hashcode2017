@@ -123,7 +123,7 @@ function Input(file) {
                 var cache = new Cache(cacheSize);
                 cache.endPoints.push(endpoint);
                 endpoint.cache[split[0]] = cache;
-                this.caches.push(cache);
+                this.caches[split[0]] = cache;
             }
             endpoint.cache[split[0]].latency[this.ep.length] = split[1];
             // if (this.caches[split[0]] == undefined)
