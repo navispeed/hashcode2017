@@ -7,11 +7,27 @@ function Request(requests, input, latency) {
     this.videoId = requests.videoId;
     this.videoSize = input.videos[requests.videoId];
     this.weight = this.nbRequest * this.videoSize * latency;
-    this.latency =
+    this.latency = latency;
     this.recalculateWeight = function (latency){
         this.weight = this.nbRequest * this.videoSize * latency;
     }
-
+    this.calculateLatency = function (servers, endpoint) {
+        this.latency = endpoint.latency;
+        for (var server in servers)
+        {
+            for (var video in server.videos)
+            {
+                if (videoId == video.videoId)
+                {
+                    if (server.latency[endpoint.id] < this.latency)
+                    {
+                        this.latency = server.latency[endpoint.id];
+                    }
+                    break;
+                }
+            }
+        }
+    }
 }
 
 
@@ -39,7 +55,7 @@ function EndPoints(latency) {
     this.updateAllRequests = function () {
         Requests = [];
         for (var request in requests) {
-            Requests.push(new Request(requests[request], input, latency));
+            request.calculateLatency(cache);
         }
     };
     this.getAllRequest = function() {
