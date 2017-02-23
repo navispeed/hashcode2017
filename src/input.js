@@ -2,6 +2,19 @@
  * Created by greg on 23/02/2017.
  */
 
+function getRequestofCache(cache) {
+    //Get all endpoints
+
+    var tab = [];
+
+    for (var i = 0; i < cache.endPoints.length; ++i) {
+        tab.concat(cache.endPoints[i].getAllRequest());
+    }
+
+    return tab;
+
+}
+
 function Request(requests, input, latency) {
     this.nbRequest = requests.nbRequest;
     this.videoId = requests.videoId;
@@ -35,15 +48,12 @@ var mainServer = {};
 function Video(size) {
     this.size = size;
     this.server = [];
-    // console.log(this);
-
     this.server.push(mainServer);
 
     this.addCache = function (cache) {
         this.server.push(cache);
         cache.videos.push(this);
     }
-
 }
 
 function EndPoints(id, latency) {
@@ -69,6 +79,7 @@ function Cache(maxSize) {
     this.used = 0;
     this.videos = [];
     this.latency = {};
+    this.endPoints = [];
 }
 
 function Input(file) {
@@ -98,6 +109,7 @@ function Input(file) {
             var split = file[line].split(" ");
             if (endpoint.cache[split[0]] == undefined) {
                 var cache = new Cache(cacheSize);
+                cache.endPoints.push(endpoint);
                 endpoint.cache[split[0]] = cache;
                 this.caches.push(cache);
             }
