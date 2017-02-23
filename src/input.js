@@ -45,7 +45,8 @@ function Request(requests, input, latency) {
 
 var mainServer = {};
 
-function Video(size) {
+function Video(id, size) {
+    this.id = id;
     this.size = size;
     this.server = [];
     this.server.push(mainServer);
@@ -53,6 +54,7 @@ function Video(size) {
     this.addCache = function (cache) {
         this.server.push(cache);
         cache.videos.push(this);
+        cache.used += this.size;
     }
 }
 
@@ -79,7 +81,8 @@ function EndPoints(id, latency) {
     }
 }
 
-function Cache(maxSize) {
+function Cache(id, maxSize) {
+    this.id = id;
     this.capacity = maxSize;
     this.used = 0;
     this.videos = [];
@@ -110,7 +113,7 @@ function howManyDoWeUse(input) {
 }
 
 function Input(file) {
-    mainServer = new Cache(-1);
+    mainServer = new Cache(-1, -1);
     this.videos = [];
     this.ep = [];
     this.caches = {}; //{endpoints}
@@ -120,7 +123,7 @@ function Input(file) {
     var cacheSize = file[0].split(" ")[4];
     var videoLine = file[1].split(" ");
     for (var elem in videoLine) {
-        this.videos.push(new Video(videoLine[elem]));
+        this.videos.push(this.videos.length, new Video(videoLine[elem]));
     }
 
     mainServer.videos = this.videos;
@@ -135,7 +138,7 @@ function Input(file) {
             // console.log("line:", file[line]);
             var split = file[line].split(" ");
             if (endpoint.cache[split[0]] == undefined) {
-                var cache = new Cache(cacheSize);
+                var cache = new Cache(this.caches.length, cacheSize);
                 cache.endPoints.push(endpoint);
                 endpoint.cache[split[0]] = cache;
                 this.caches[split[0]] = cache;
@@ -160,4 +163,3 @@ function Input(file) {
         ++line
     }
 }
-
