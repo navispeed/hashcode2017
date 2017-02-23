@@ -14,7 +14,7 @@ function getRequestofCache(cache) {
     return tab;
 }
 
-function Request(requests, input, latency) {
+function Request(requests, latency) {
     this.nbRequest = requests.nbRequest;
     this.videoId = requests.videoId;
     this.videoSize = input.videos[requests.videoId];
@@ -57,14 +57,20 @@ function Video(size) {
 
 function EndPoints(id, latency) {
     this.id = id;
-    this.latency = latency;
+    this.latency = latency; //latency with main
     this.cache = {};
     this.requests = [];
     this.Requests = [];
-    this.updateAllRequests = function () {
+    this.createAllRequests = function() {
         Requests = [];
-        for (var request in requests) {
-            request.calculateLatency(cache);
+        for (var request in this.requests) {
+            Requests.push(new Request(requests[request], latency));
+        }
+    };
+    this.updateAllRequests = function () {
+        for (var request in this.requests) {
+            Requests.push(new Request(requests[request], latency));
+            requests[request].calculateLatency(cache);
         }
     };
     this.getAllRequest = function() {
