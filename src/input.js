@@ -69,7 +69,7 @@ function EndPoints(id, latency) {
         }
     };
     this.getAllRequest = function() {
-        var Requests = [];
+        return this.Requests;
 
     }
 }
