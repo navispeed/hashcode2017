@@ -99,6 +99,16 @@ function Cache(maxSize) {
     }
 }
 
+function howManyDoWeUse(input) {
+    var used = 0;
+    for (cache in input.caches) {
+        if (input.caches[cache].used > 0) {
+            used++;
+        }
+    }
+    return used;
+}
+
 function Input(file) {
     mainServer = new Cache(-1);
     this.videos = [];
