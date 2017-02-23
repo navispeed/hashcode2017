@@ -8,9 +8,9 @@ function getRequestofCache(cache) {
     var tab = [];
 
     for (var i = 0; i < cache.endPoints.length; ++i) {
-        tab.concat(cache.endPoints[i].getAllRequest());
-    }
+        var tmp = cache.endPoints[i].getAllRequest();
 
+<<<<<<< HEAD
     var sorted = tab.sort(function(a, b) {
             if (a.weight < b.weight)
                 return -1;
@@ -20,24 +20,33 @@ function getRequestofCache(cache) {
         });
 
     return sorted;
+=======
+        for (var j = 0; j < tmp.length; ++j) {
+            tab.push(tmp[j]);
+        }
+    }
+    return tab;
+>>>>>>> 95759506e503a71bf77ba0658b35554d1e5d5f54
 }
 
-function Request(requests, input, latency) {
+function Request(requests, latency) {
     this.nbRequest = requests.nbRequest;
     this.videoId = requests.videoId;
-    this.videoSize = input.videos[requests.videoId];
-    this.weight = this.nbRequest * this.videoSize * latency;
+    this.videoSize = input.videos[requests.videoId].size;
+    this.weight = parseInt(this.nbRequest) * parseInt(this.videoSize) * parseInt(latency);
     this.latency = latency;
-    this.recalculateWeight = function (latency){
-        this.weight = this.nbRequest * this.videoSize * latency;
-    }
+    this.recalculateWeight = function (_latency){
+        this.weight = parseInt(this.nbRequest) * parseInt(this.videoSize) * parseInt(_latency);
+    };
     this.calculateLatency = function (servers, endpoint) {
         this.latency = endpoint.latency;
-        for (var server in servers)
+        for (var _server in servers)
         {
-            for (var video in server.videos)
+            var server = servers[_server];
+            for (var _video in server.videos)
             {
-                if (videoId == video.videoId)
+                var video = server.videos[_video];
+                if (this.videoId == video.videoId)
                 {
                     if (server.latency[endpoint.id] < this.latency)
                     {
@@ -47,12 +56,14 @@ function Request(requests, input, latency) {
                 }
             }
         }
+        this.recalculateWeight(this.latency);
     }
 }
 
 var mainServer = {};
 
-function Video(size) {
+function Video(id, size) {
+    this.id = id;
     this.size = size;
     this.server = [];
     this.server.push(mainServer);
@@ -60,22 +71,29 @@ function Video(size) {
     this.addCache = function (cache) {
         this.server.push(cache);
         cache.videos.push(this);
+        cache.used += this.size;
     }
 }
 
 function EndPoints(id, latency) {
     this.id = id;
-    this.latency = latency;
+    this.latency = latency; //latency with main
     this.cache = {};
     this.requests = [];
     this.Requests = [];
+    this.createAllRequests = function() {
+        this.Requests = [];
+        for (var request in this.requests) {
+            this.Requests.push(new Request(this.requests[request], latency));
+        }
+    };
     this.updateAllRequests = function () {
-        Requests = [];
-        for (var request in requests) {
-            request.calculateLatency(cache);
+        for (var request in this.Requests) {
+            this.Requests[request].calculateLatency(this.cache, this);
         }
     };
     this.getAllRequest = function() {
+        // console.log(this.Requests);
         return this.Requests.sort(function(a, b) {
             if (a.weight < b.weight)
                 return -1;
@@ -86,8 +104,8 @@ function EndPoints(id, latency) {
     }
 }
 
-function Cache(maxSize) {
-
+function Cache(id, maxSize) {
+    this.id = id;
     this.capacity = maxSize;
     this.used = 0;
     this.videos = [];
@@ -118,6 +136,14 @@ function Cache(maxSize) {
                     request.video.servers.splice(i, 1);
                     break;
                 }
+        for (var _request in requests)
+        {
+            var request = requests[_request];
+            if (this.capacity - this.used >= input.videos[request.videoId].size)
+            {
+                this.videos.push(input.videos[request.videoId]);
+                input.videos[request.videoId].server.push(this);
+                this.used += input.videos[request.videoId].size;
             }
         }
         this.videos = []
@@ -158,7 +184,7 @@ function Cache(maxSize) {
 
 function howManyDoWeUse(input) {
     var used = 0;
-    for (cache in input.caches) {
+    for (var cache in input.caches) {
         if (input.caches[cache].used > 0) {
             used++;
         }
@@ -167,7 +193,7 @@ function howManyDoWeUse(input) {
 }
 
 function Input(file) {
-    mainServer = new Cache(-1);
+    mainServer = new Cache(-1, -1);
     this.videos = [];
     this.ep = [];
     this.caches = {}; //{endpoints}
@@ -177,9 +203,8 @@ function Input(file) {
     var cacheSize = file[0].split(" ")[4];
     var videoLine = file[1].split(" ");
     for (var elem in videoLine) {
-        this.videos.push(new Video(videoLine[elem]));
+        this.videos.push(new Video(this.videos.length, videoLine[elem]));
     }
-
     mainServer.videos = this.videos;
 
     var line = 2;
@@ -192,7 +217,7 @@ function Input(file) {
             // console.log("line:", file[line]);
             var split = file[line].split(" ");
             if (endpoint.cache[split[0]] == undefined) {
-                var cache = new Cache(cacheSize);
+                var cache = new Cache(Object.keys(this.caches).length, cacheSize);
                 cache.endPoints.push(endpoint);
                 endpoint.cache[split[0]] = cache;
                 this.caches[split[0]] = cache;
@@ -217,4 +242,3 @@ function Input(file) {
         ++line
     }
 }
-
