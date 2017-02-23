@@ -12,10 +12,9 @@ function getRequestofCache(cache) {
     }
 
     return tab;
-
 }
 
-function Request(requests, input, latency) {
+function Request(requests, latency) {
     this.nbRequest = requests.nbRequest;
     this.videoId = requests.videoId;
     this.videoSize = input.videos[requests.videoId];
@@ -60,14 +59,20 @@ function Video(id, size) {
 
 function EndPoints(id, latency) {
     this.id = id;
-    this.latency = latency;
+    this.latency = latency; //latency with main
     this.cache = {};
     this.requests = [];
     this.Requests = [];
-    this.updateAllRequests = function () {
+    this.createAllRequests = function() {
         Requests = [];
-        for (var request in requests) {
-            request.calculateLatency(cache);
+        for (var request in this.requests) {
+            Requests.push(new Request(requests[request], latency));
+        }
+    };
+    this.updateAllRequests = function () {
+        for (var request in this.requests) {
+            Requests.push(new Request(requests[request], latency));
+            requests[request].calculateLatency(cache);
         }
     };
     this.getAllRequest = function() {
@@ -92,11 +97,11 @@ function Cache(id, maxSize) {
     {
         for (var request in requests)
         {
-            if (server.capacity - server.used >= request.video.size)
+            if (this.capacity - this.used >= request.video.size)
             {
-                server.videos.push(request.video);
-                request.video.servers.push(server);
-                server.used += request.video.size;
+                this.videos.push(request.video);
+                request.video.servers.push(this);
+                this.used += request.video.size;
             }
         }
     }
