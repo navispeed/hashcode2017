@@ -69,7 +69,7 @@ function Cache(maxSize) {
     this.used = 0;
     this.videos = [];
     this.latency = {};
-    function fill (requests)
+    this.fill = function (requests)
     {
         for (var request in requests)
         {
