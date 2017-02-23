@@ -43,17 +43,13 @@ function Input(file) {
         this.ep.push(endpoint);
     }
 
-    console.log("RD");
     while (line < file.length - 1) {
-        console.log(file[line]);
         var splitted = file[line].split(" ");
 
         // console.log("toto:", this.ep[splitted[1]].requests);
-        console.log("this.ep[" + splitted[1] + "]", this.ep[splitted[1]].requests);
 
 
         this.ep[splitted[1]].requests.push({nbRequest: splitted[2], videoId: splitted[0]});
-        console.log("endpoints " + splitted[1], this.ep[splitted[1]].requests);
         ++line
     }
 
