@@ -12,7 +12,6 @@ function getRequestofCache(cache) {
     }
 
     return tab;
-
 }
 
 function Request(requests, input, latency) {
@@ -89,11 +88,11 @@ function Cache(maxSize) {
     {
         for (var request in requests)
         {
-            if (server.capacity - server.used >= request.video.size)
+            if (this.capacity - this.used >= request.video.size)
             {
-                server.videos.push(request.video);
-                request.video.servers.push(server);
-                server.used += request.video.size;
+                this.videos.push(request.video);
+                request.video.servers.push(this);
+                this.used += request.video.size;
             }
         }
     }
